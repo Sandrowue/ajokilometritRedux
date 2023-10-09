@@ -4,9 +4,11 @@ import {
     MD3LightTheme as DefaultTheme,
     PaperProvider,
 } from 'react-native-paper';
+import * as ReactRedux from 'react-redux';
 import { hasSaveDirPermisssion } from './jsonFiles';
 import SettingsScreen from './SettingsScreen';
-import Main from './Main'
+import Main from './Main';
+import store from './index';
 
 const theme = {
     ...DefaultTheme,
@@ -30,15 +32,17 @@ export default function App() {
     }, []);
 
     return (
-        <PaperProvider theme={theme}>
-            {settingsOk == null ? (
-                <ActivityIndicator /> 
-             ) : !settingsOk ? (
-                <SettingsScreen onChange={updateSettingsOk} />
-            ) : (
-                <Main />
-            )}
-        </PaperProvider>
+        <ReactRedux.Provider store={store}>
+            <PaperProvider theme={theme}>
+                {settingsOk == null ? (
+                    <ActivityIndicator /> 
+                ) : !settingsOk ? (
+                    <SettingsScreen onChange={updateSettingsOk} />
+                ) : (
+                    <Main />
+                )}
+            </PaperProvider>
+        </ReactRedux.Provider>
     );
 }    
 

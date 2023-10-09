@@ -23,7 +23,7 @@ export default function TripList({
     onDelete,
 }: Props) {
 
-    function ListRow({ item: trip, index }: { item: Trip; index: number }) {
+    function ListRow({ item: trip}: { item: Trip}) {
         return (
             <Button onPress={() => onTripClick?.(trip)} style={styles.item}>
                 <Text style={styles.itemText}>{trip.description}</Text>

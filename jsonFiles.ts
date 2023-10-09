@@ -8,25 +8,11 @@ export async function loadJsonFile(filename: string): Promise<any | null> {
         return null;
     }
     try {
-        return parseJsonWithDates(contents);
+        return JSON.parse(contents);
     } catch (error) {
         console.error('JSON-jäsennysvirhe: ', error, 'JSON oli:', contents);
         return null;
     }
-}
-
-const dateRx = /^\d{4}-[01]\d-[0-3]\dT\d\d:\d\d:\d\d\.?\d{0,6}(Z|[+-]\d{4})$/;
-
-function parseJsonWithDates(contents: string): any {
-    function parseDate(key: string, value: any) {
-        if (typeof value === 'string' && dateRx.test(value)) {
-            try {
-                return new Date(value);
-            } catch {}
-        }
-        return value;
-    }
-    return JSON.parse(contents, parseDate);
 }
 
 async function loadJsonFileContents(filename: string): Promise<string | null> {

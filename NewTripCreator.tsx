@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {Trip} from './Trip';
-import {saveTrip} from './store';
+import { useDispatch } from './hooks';
+import { addOrUpdateTrip } from './trips';
 import NewTripForm from './NewTripForm';
 import { ScrollView } from 'react-native'
 
@@ -10,7 +11,8 @@ type Props = {
 };
 
 export default function NewTripCreator({onSubmit}: Props) {
-    const [latestTripId, setLatestTripId] = useState<string | null>(null)
+    const [latestTripId, setLatestTripId] = useState<string | null>(null);
+    const dispatch = useDispatch();
 
     return (
         <ScrollView>
@@ -18,7 +20,7 @@ export default function NewTripCreator({onSubmit}: Props) {
             <NewTripForm
                 key={latestTripId ?? ''} // Vaihda Form aina kun tallennetaan
                 onSubmit={(trip: Trip) => {
-                    saveTrip(trip);
+                    dispatch(addOrUpdateTrip(trip));
                     setLatestTripId(trip.id);
                     onSubmit?.(trip);
                 }

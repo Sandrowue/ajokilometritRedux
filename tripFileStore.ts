@@ -1,17 +1,11 @@
 import {Trip} from './Trip';
 import {loadJsonFile, overwriteJsonFile} from './jsonFiles';
 import {newId} from './newId';
+import {dateToTimestamp} from './time';
 
 const TRIPS_FILE = 'ajokilsat.json';
 
 let savedTrips: Trip[] | null = null;
-
-export async function getTrip(tripId: string) {
-    const trips = await loadTrips();
-    const trip: Trip | undefined = trips.find((x) => x.id === tripId);
-    if (trip === undefined) throw Error('Ei löydy matkaa id:llä ${tripId}');
-    return trip;
-}
 
 export async function loadTrips(reload: boolean = false): Promise<Trip[]> {
     if (savedTrips === null || reload) {
@@ -20,43 +14,9 @@ export async function loadTrips(reload: boolean = false): Promise<Trip[]> {
     return savedTrips ?? exampleTrips;
 }
 
-export async function saveTrip(trip: Trip): Promise<void> {
-    const trips = await loadTrips();
-    const index = trips.findIndex((x) => x.id === trip.id);
-    if (index < 0) { // Ei löytynyt id:llä => uusi matka
-        trips.unshift(trip); // Lisätään annettu trip listan trips alkuun
-    }
-    else {
-        trips[index] = trip; // päivitetään ko. indexissä olevaa trippiä
-    }
-
-    trips.sort((tripA: Trip, tripB:Trip) => {
-        const a = tripA.timestampAtBegin ?? null;
-        const b = tripB.timestampAtBegin ?? null;
-        if (a == b) {
-            //Vertaile id:n perusteella, jos timestampit ovat samat
-            //tai puuttuvat molemmista
-            const aId = tripA.id;
-            const bId = tripB.id;
-            return aId > bId ? -1 : aId == bId ? 0 : 1;
-        }
-        return a > b ? -1 : 1;
-    }
-    );
-    await saveTripsToFile(trips);
-}
-
-export async function deleteTrip({id}: {id: string}): Promise<void> {
-    const trips = await loadTrips();
-    const index = trips.findIndex((x) => x.id === id);
-    if (index < 0) {
-        throw new Error (`Matkaa id:llä ${id} ei löydy`);
-    }
-    trips.splice(index, 1);
-    await saveTripsToFile(trips);
-}
-
-async function saveTripsToFile(trips: Trip[]) {
+export async function saveTripsToFile(trips: Trip[]) {
+    /* Tallenna myös muuttujaan, jotta load Trips varmaan palauttaa tallennetut muukokset vaikka sitä kutsuttaisiin reload=flse:lla.
+    HUOM: Käyttää [...trips] decontruktoinia, jotta savedTrips:n sisältö muuttuu jolloin React varmasti huomaa muutokset. */
     savedTrips = [...trips];
     await overwriteJsonFile(TRIPS_FILE, savedTrips);
 }
