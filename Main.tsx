@@ -74,7 +74,6 @@ export default function Main() {
         return (
             <NewTripCreator
                 onSubmit={async(trip: Trip) => {
-                    await reloadTrips();
                     setShownTripId(trip.id);
                     navigation.navigate('trips');
                 }}
