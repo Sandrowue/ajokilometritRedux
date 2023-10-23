@@ -1,12 +1,13 @@
 import {useState} from 'react';
 import {ScrollView} from 'react-native';
-import {Button, SegmentedButtons, Text, TextInput} from 'react-native-paper';
+import {Button, Dialog, Portal, SegmentedButtons, Text, TextInput} from 'react-native-paper';
 
 import { dateToTimestamp, timestampToDate } from './time';
 import { cleanNumberText, parseNumber } from './numbers';
 import { DateTimeField } from './DateTimeField';
 import {Trip} from './Trip';
 import {newId} from './newId';
+
 
 type Props = {
     initialValue?: Trip | null;
@@ -28,6 +29,7 @@ export default function TripForm ({
     const[odometerAtBegin, setOdometerAtBegin] = useState<string>(iv?.odometerAtBegin?.toString() ?? '');
     const[odometerAtEnd, setOdometerAtEnd] = useState<string>(iv?.odometerAtEnd?.toString() ?? '');
     const[routeDescription, setRouteDescription] = useState(iv?.routeDescription ?? '');
+    const[isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState<boolean>(false);
 
     function submitForm() {
         const trip: Trip = {
@@ -41,7 +43,30 @@ export default function TripForm ({
             routeDescription,
         };
         onSubmit?.(trip);
-        console.debug(trip);
+    }
+
+    function DeleteConfirmDialog() {
+        function hide() {
+            setIsDeleteConfirmVisible(false);
+        }
+        function deleteAndHide() {
+            onDelete?.();
+            hide();
+        }
+        return (
+            <Dialog visible={isDeleteConfirmVisible} onDismiss={hide}>
+                <Dialog.Title>Vahvista poistaminen</Dialog.Title>
+                <Dialog.Content>
+                    <Text variant="bodyMedium">
+                        Haluatko varmasti poistaa matkan?
+                    </Text>
+                </Dialog.Content>
+                <Dialog.Actions>
+                    <Button onPress={hide}>Peruuta</Button>
+                    <Button onPress={deleteAndHide}>Poista</Button>
+                </Dialog.Actions>
+            </Dialog>
+        );
     }
        
     return (
@@ -67,10 +92,16 @@ export default function TripForm ({
                 </Button>
             ) :null}
             {onDelete ? (
-                <Button onPress={() => onDelete()} mode="outlined">
+                <Button 
+                onPress={() => setIsDeleteConfirmVisible(true)}
+                mode="outlined"
+                >
                     Poista
                 </Button>
             ) : null}
+            <Portal>
+                <DeleteConfirmDialog />
+            </Portal>
            
         </ScrollView>
     );

@@ -29,7 +29,6 @@ export default function NewTripForm({onSubmit}: Props) {
             routeDescription,
         };
         onSubmit?.(trip);
-        console.debug(trip);
     }
        
     return (

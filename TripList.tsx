@@ -1,9 +1,10 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text } from 'react-native';
-import { Button, Modal, Portal } from 'react-native-paper';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { TouchableRipple, Modal, Portal } from 'react-native-paper';
 
 import { Trip } from './Trip';
 import TripForm from './TripForm';
+import { timestampToString } from './time';
 
 type Props = {
     trips: Trip[];
@@ -24,10 +25,26 @@ export default function TripList({
 }: Props) {
 
     function ListRow({ item: trip}: { item: Trip}) {
+        const isOpen = trip.timestampAtEnd == null;
         return (
-            <Button onPress={() => onTripClick?.(trip)} style={styles.item}>
-                <Text style={styles.itemText}>{trip.description}</Text>
-            </Button>
+            <TouchableRipple onPress={() => onTripClick?.(trip)}>
+                <View style={styles.itemContainer}>
+                    <Text style={styles.itemTime}>
+                        {timestampToString(trip.timestampAtBegin)}
+                        {trip.timestampAtEnd
+                            ? ' - ' + timestampToString(trip.timestampAtEnd)
+                            : null
+                        }
+                    </Text>
+                    <Text
+                        style={[
+                            styles.itemText,
+                            isOpen ? styles.openItem : styles.closedItem,
+                        ]}
+                        >{trip.description}
+                        </Text>
+                </View>
+            </TouchableRipple>
         );
     }
 
@@ -73,12 +90,23 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     list: {},
-    item: {
+    itemContainer: {
         padding: 4,
+        paddingTop: 6,
+        paddingBottom: 6,
+        borderBottomWidth: 1,
+        borderBottomColor: '#bbb',
         height: 50,
     },
+    openItem: {
+        color: 'red'
+    },
+    closedItem: {},
     itemText: {
         fontSize: 20,
     },
+    itemTime: {
+        fontSize: 12
+    }
 });
 

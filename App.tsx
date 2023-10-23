@@ -1,3 +1,5 @@
+import moment from 'moment';
+import 'moment/locale/fi';
 import * as React from 'react';
 import {
     ActivityIndicator,
@@ -9,6 +11,8 @@ import { hasSaveDirPermisssion } from './jsonFiles';
 import SettingsScreen from './SettingsScreen';
 import Main from './Main';
 import store from './index';
+
+moment.locale('fi');
 
 const theme = {
     ...DefaultTheme,

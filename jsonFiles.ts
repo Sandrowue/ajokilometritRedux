@@ -7,12 +7,7 @@ export async function loadJsonFile(filename: string): Promise<any | null> {
     if (!contents) {
         return null;
     }
-    try {
-        return JSON.parse(contents);
-    } catch (error) {
-        console.error('JSON-jäsennysvirhe: ', error, 'JSON oli:', contents);
-        return null;
-    }
+    return JSON.parse(contents);
 }
 
 async function loadJsonFileContents(filename: string): Promise<string | null> {
